@@ -6,7 +6,7 @@ import { DataService } from '../services/data.service';
 @Component({
   selector: 'app-relatorio',
   standalone: true,
-  imports: [HttpClientModule,CommonModule],
+  imports: [CommonModule],
   templateUrl: './relatorio.component.html',
   styleUrl: './relatorio.component.css'
 })
@@ -37,8 +37,6 @@ export class RelatorioComponent implements OnInit {
     this.dataServices.getOrgaos().subscribe(data => {
       this.orgaos= data;
     });
-
-
 
   }
 }

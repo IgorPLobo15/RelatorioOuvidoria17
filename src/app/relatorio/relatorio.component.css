@@ -1,56 +1,56 @@
 .caixa {
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 0px;
-  margin-bottom: 0px;
-  background-color: #fff;
-}
-
-.titulo-caixa {
-  background-color: #f2f2f2;
-  color: #666;
-  padding: 10px 10px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-}
-
-.caixa > form, .caixa > div {
-  padding: 10px;
-}
-
-.form-group label {
-  font-weight: bold;
-  color: #444;
-}
-
-.btn-primary, .btn-secondary {
-  margin-right: 5px;
-}
-
-.form-control {
-  border-radius: 5px;
-}
-
-.grafico-canvas {
-  width: 100% !important;
-  height: 400px !important; /* Ajuste a altura conforme necessário */
-}
-
-.respiro-inferior {
-  padding-bottom: 50px; /* Ou a margem que você achar melhor */
-}
-
-.nota-rodape {
-  font-size: 1.0rem; /* Ajuste o tamanho da fonte conforme necessário */
-  text-align: left;
-  margin-top: 0px; /* Espaço acima da nota */
-  color: #666; /* Cor do texto */
-  font-weight: bold;
-}
-
-/* Adicione esta media query ao seu CSS */
-@media (max-width: 767.98px) { /* Bootstrap breakpoint para telas pequenas (sm) */
-  .grafico-respiro {
-    margin-bottom: 25px; /* Ajuste o valor conforme necessário */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 0px;
+    margin-bottom: 0px;
+    background-color: #fff;
   }
-}
+  
+  .titulo-caixa {
+    background-color: #f2f2f2;
+    color: #666;
+    padding: 10px 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  
+  .caixa > form, .caixa > div {
+    padding: 10px;
+  }
+  
+  .form-group label {
+    font-weight: bold;
+    color: #444;
+  }
+  
+  .btn-primary, .btn-secondary {
+    margin-right: 5px;
+  }
+  
+  .form-control {
+    border-radius: 5px;
+  }
+  
+  .grafico-canvas {
+    width: 100% !important;
+    height: 400px !important; /* Ajuste a altura conforme necessário */
+  }
+  
+  .respiro-inferior {
+    padding-bottom: 50px; /* Ou a margem que você achar melhor */
+  }
+  
+  .nota-rodape {
+    font-size: 1.0rem; /* Ajuste o tamanho da fonte conforme necessário */
+    text-align: left;
+    margin-top: 0px; /* Espaço acima da nota */
+    color: #666; /* Cor do texto */
+    font-weight: bold;
+  }
+  
+  /* Adicione esta media query ao seu CSS */
+  @media (max-width: 767.98px) { /* Bootstrap breakpoint para telas pequenas (sm) */
+    .grafico-respiro {
+      margin-bottom: 25px; /* Ajuste o valor conforme necessário */
+    }
+  }
