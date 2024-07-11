@@ -1,150 +1,65 @@
-<p>relatorio works!</p>
 <div class="container mt-5 respiro-inferior">
-    <!-- Cabeçalho -->
-    <div class="row mb-3">
-        <div class="col-md-12 d-flex align-items-center">
-          <img src="https://www.ouvidoriageral.go.gov.br/api/imagens/logo_ouvidoria.png" width="80" alt="Logo Ouvidoria">
-            <div class="ml-2">
-                <h3>Ouvidoria</h3>
-                <h6>Relatório de Gestão</h6>
-            </div>
+  <form [formGroup]="filtroForm" (ngSubmit)="onSubmit()">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label>Período:</label>
+        <div class="input-group">
+          <input type="date" formControlName="dataInicial" class="form-control">
+          <input type="date" formControlName="dataFinal" class="form-control">
         </div>
-    </div>
-  <div class="row mb-4">
-  <div class="col-12">
-    <div class="caixa">
-      <div class="titulo-caixa"><h5>Filtros</h5></div>
-      <form>
-        <div class="row g-3">
-          <!-- Primeira Linha: Período, Órgão, Tipo -->
-          <div class="col-md-4">
-            <label>Período:</label>
-            <div class="input-group">
-              <input type="date" min="2023-06-22"  id="dataInicial" class="form-control" placeholder="Data Inicial" aria-label="Data Inicial">
-              <input type="date" min="2023-06-22" id="dataFinal" class="form-control" placeholder="Data Final" aria-label="Data Final">
-            </div>
-          </div>
-          <div class="col-md-4">
-            <label for="orgaoSelect">Órgão:</label>
-            <select id="orgaoSelect" class="form-control">
-              <option value="" >..Todos..</option>
-              <option *ngFor="let orgao of orgaos" [value]="orgao.id_orgao">{{ orgao.ds_nome }}</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label for="tipoManifestacaoSelect">Tipo:</label>
-            <select id="tipoManifestacaoSelect" class="form-control">
-              <option value="" >..Todos..</option>
-              <option *ngFor="let tipo of manifestacaoTipos" [value]="tipo.id_manifestacao_tipo">{{ tipo.ds_manifestacao_tipo }}</option>
-            </select>
-          </div>
-        </div>
-  
-        <div class="row g-3 mt-2">
-          <!-- Segunda Linha: Assunto, Subassunto, Trâmite -->
-          <div class="col-md-4">
-            <label for="assuntoSelect">Assunto:</label>
-            <select id="assuntoSelect" class="form-control">
-              <option value="" >..Todos..</option>
-              <option *ngFor="let assunto of assuntos" [value]="assunto.id_assunto">{{ assunto.ds_assunto }}</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label for="subAssuntoSelect">Subassunto:</label>
-            <select id="subAssuntoSelect" class="form-control">
-              <option value="" >..Todos..</option>
-              <option *ngFor="let subassunto of subassuntos" [value]="subassunto.id_subassunto">{{ subassunto.ds_subassunto }}</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label for="tramiteSelect">Trâmite:</label>
-            <select id="tramiteSelect" class="form-control">
-              <option value="" >..Todos..</option>
-              <option *ngFor="let tramite of tramites" [value]="tramite.id_tipo_tramite">{{ tramite.ds_tipo_tramite }}</option>
-            </select>
-          </div>
-        </div>
-  
-        <div class="row mt-3">
-          <!-- Terceira Linha: Botões -->
-          <div class="col-12 d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary me-2">Filtrar</button>
-            <button type="button" class="btn btn-warning me-2" id="btnLimpar">Limpar</button>
-            <button type="button" class="btn btn-success" id="btnExportar">Exportar</button>
-          </div>
-  
-          <div id="linkDadosAnteriores" class="nota-rodape" style="text-align:right;">
-            <br>Para acessar dados anteriores a 22/06/2023 <a href="http://www.cge.go.gov.br/ouvidoria/relatorioGeral.php?orgaoEntidade=63&tipoManifestacao=7" target="_blank" id="linkAntigo">clique aqui</a>.
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-  </div>
-    <div class="row gx-4 mb-4">
-        <div class="col-md-6 grafico-respiro">
-    <div class="caixa">
-      <div class="titulo-caixa"><h5>Manifestações no Período Selecionado</h5></div>
-      <div id="totalRegistros" class="mb-2">Total de Registros: 0</div>
-      <div class="border p-3"><canvas id="painel1" class="grafico-canvas">
-      </canvas>
-  
+      </div>
+      <div class="col-md-4">
+        <label for="orgaoSelect">Órgão:</label>
+        <select formControlName="orgao" class="form-control">
+          <option *ngFor="let orgao of orgaos" [value]="orgao.id_orgao">{{ orgao.ds_nome }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="tipoManifestacaoSelect">Tipo:</label>
+        <select formControlName="tipo" class="form-control">
+          <option *ngFor="let tipo of tipos" [value]="tipo.id_manifestacao_tipo">{{ tipo.ds_manifestacao_tipo }}</option>
+        </select>
       </div>
     </div>
-        </div>
-        <div class="col-md-6">
-    <div class="caixa">
-      <div class="titulo-caixa"><h5>Número de Manifestações/Tipo</h5></div>
-      <div id="totalRegistros" class="mb-2">&nbsp;</div>
-      <div class="border p-3"><canvas id="painel2" class="grafico-canvas"></canvas></div>
-  
+
+    <div class="row g-3 mt-2">
+      <div class="col-md-4">
+        <label for="assuntoSelect">Assunto:</label>
+        <select formControlName="assunto" class="form-control" (change)="onAssuntoChange()">
+          <option *ngFor="let assunto of assuntos" [value]="assunto.id_assunto">{{ assunto.ds_assunto }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="subAssuntoSelect">Subassunto:</label>
+        <select formControlName="subassunto" class="form-control">
+          <option *ngFor="let subassunto of subassuntos" [value]="subassunto.id_subassunto">{{ subassunto.ds_subassunto }}</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="tramiteSelect">Trâmite:</label>
+        <select formControlName="tramite" class="form-control">
+          <option *ngFor="let tramite of tramites" [value]="tramite.id_tipo_tramite">{{ tramite.ds_tipo_tramite }}</option>
+        </select>
+      </div>
     </div>
-  
-        </div>
+
+    <div class="row mt-3">
+      <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+        <button type="reset" class="btn btn-warning me-2">Limpar</button>
+      </div>
     </div>
-    <div class="row gx-4 mb-4">
-        <div class="col-md-6 grafico-respiro">
-    <div class="caixa">
-      <div class="titulo-caixa"><h5>Órgãos mais Demandados</h5></div>
-      <div class="border p-3"><canvas id="painel3" class="grafico-canvas"></canvas></div>
-    </div>
-        </div>
-        <div class="col-md-6">
-    <div class="caixa">
-      <div class="titulo-caixa"><h5>Canais de Atendimento</h5></div>
-      <div class="border p-3"><canvas id="painel4" class="grafico-canvas"></canvas></div>
-    </div>
-        </div>
-    </div>
-  <div class="row mb-4">
-        <div class="col-12">
-    <div class="caixa">
-      <div class="titulo-caixa"><h5>Manifestações por Municípios</h5></div>
-      <div class="border p-3"><canvas id="painel5" class="grafico-canvas"></canvas></div>
-    </div>
-        </div>
-    </div>
+  </form>
+
   <div class="row gx-4 mb-4">
-        <div class="col-md-6 grafico-respiro">
-    <div class="caixa">
-      <div class="titulo-caixa"><h5>LAI Recebidas</h5></div>
-      <div id="totalRecebidas" class="mb-2">Total de LAI Recebidas: 0</div>
-      <div class="border p-3"><canvas id="painel6" class="grafico-canvas"></canvas></div>
-    </div>
+    <div class="col-md-6 grafico-respiro">
+      <div class="caixa">
+        <div class="titulo-caixa"><h5>Manifestações no Período Selecionado</h5></div>
+        <div id="totalRegistros" class="mb-2">Total de Registros: <strong>{{ totalRegistros }}</strong></div>
+        <div class="border p-3">
+          <canvas id="painel1" class="grafico-canvas"></canvas>
         </div>
-        <div class="col-md-6">
-    <div class="caixa">
-      <div class="titulo-caixa"><h5>Motivo LAI Indeferida</h5></div>
-      <div id="totalRegistros" class="mb-2">&nbsp;</div>
-      <div class="border p-3"><canvas id="painel7" class="grafico-canvas"></canvas></div>
+      </div>
     </div>
-        </div>
-    </div>
-  <div class="row">
-  <div class="col-12">
-    <p class="nota-rodape">
-      * O Novo Sistema de Ouvidoria do Estado de Goiás (em utilização a partir de 22/06/2023) não exige informações genéricas sobre os solicitantes.
-    </p>
   </div>
-  </div>
-  </div>
+</div>
