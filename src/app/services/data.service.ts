@@ -31,7 +31,17 @@ export class DataService {
     return this.http.get(`${this.apiUrl}/tipos-tramites`);
   }
 
-  getDadosPainel(painel: number, filtros: any): Observable<any> {
+  getDadosPainel1(painel: number, filtros: any): Observable<any> {
+    let params = new HttpParams().set('painel', painel.toString());
+    Object.keys(filtros).forEach(key => {
+      if (filtros[key]) {
+        params = params.set(key, filtros[key]);
+      }
+    });
+    return this.http.get(`${this.apiUrl}/relatorios/dados-painel`, { params });
+  }
+
+  getDadosPainel2(painel: number, filtros: any): Observable<any> {
     let params = new HttpParams();
     Object.keys(filtros).forEach(key => {
       params = params.set(key, filtros[key]);

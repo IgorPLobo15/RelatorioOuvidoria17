@@ -26,8 +26,8 @@ export class RelatorioComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private dataService: DataService) {
     this.filtroForm = this.fb.group({
-      dataInicial: [''],
-      dataFinal: [''],
+      data_inicial: [''],
+      data_final: [''],
       orgao: [''],
       tipo: [''],
       assunto: [''],
@@ -54,13 +54,14 @@ export class RelatorioComponent implements OnInit {
 
   onSubmit() {
     if (this.filtroForm.valid) {
-      this.carregarGraficos();
+       console.log('Filtros:', this.filtroForm.value);
+      this.carregarGrafico1();
     }
   }
 
-  carregarGraficos() {
+  carregarGrafico1() {
     const filtros = this.filtroForm.value;
-    this.dataService.getDadosPainel(1, filtros).subscribe(data => {
+    this.dataService.getDadosPainel1(1, filtros).subscribe(data => {
       const tipos = data.map((item: any) => item.ds_manifestacao_tipo);
       const nums = data.map((item: any) => item.num);
 
