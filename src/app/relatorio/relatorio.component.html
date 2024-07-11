@@ -11,12 +11,14 @@
       <div class="col-md-4">
         <label for="orgaoSelect">Órgão:</label>
         <select formControlName="orgao" class="form-control">
+          <option value="">Todos</option>
           <option *ngFor="let orgao of orgaos" [value]="orgao.id_orgao">{{ orgao.ds_nome }}</option>
         </select>
       </div>
       <div class="col-md-4">
         <label for="tipoManifestacaoSelect">Tipo:</label>
         <select formControlName="tipo" class="form-control">
+          <option value="">Todos</option>
           <option *ngFor="let tipo of tipos" [value]="tipo.id_manifestacao_tipo">{{ tipo.ds_manifestacao_tipo }}</option>
         </select>
       </div>
