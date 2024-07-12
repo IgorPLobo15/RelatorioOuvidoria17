@@ -1,6 +1,15 @@
 <div class="container mt-5 respiro-inferior">
   <form [formGroup]="filtroForm" (ngSubmit)="onSubmit()">
     <div class="row g-3">
+      <div class="row mb-3">
+        <div class="col-md-12 d-flex align-items-center">
+            <img src="https://www.ouvidoriageral.go.gov.br/api/imagens/logo_ouvidoria.png" width="80">
+            <div class="ml-2">
+                <h3>Ouvidoria</h3>
+                <h6>Relatório de Gestão</h6>
+            </div>
+        </div>
+    </div>
       <div class="col-md-4">
         <label>Período:</label>
         <div class="input-group">
@@ -28,6 +37,7 @@
       <div class="col-md-4">
         <label for="assuntoSelect">Assunto:</label>
         <select formControlName="assunto" class="form-control" (change)="onAssuntoChange()">
+          <option value="">Todos</option>
           <option *ngFor="let assunto of assuntos" [value]="assunto.id_assunto">{{ assunto.ds_assunto }}</option>
         </select>
       </div>
@@ -63,5 +73,38 @@
         </div>
       </div>
     </div>
+
+    <div class="col-md-6">
+      <div class="caixa">
+        <div class="titulo-caixa"><h5>Número de Manifestações/Tipo</h5></div>
+        <div id="totalRegistros" class="mb-2">&nbsp;</div>
+        <div class="border p-3">
+          <canvas id="painel2" class="grafico-canvas"></canvas>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <div class="row gx-4 mb-4">
+    <div class="row gx-4 mb-4">
+      <div class="col-md-6 grafico-respiro">
+        <div class="caixa">
+          <div class="titulo-caixa"><h5>Órgãos mais Demandados</h5></div>
+          <div class="border p-3">
+            <canvas id="painel3" class="grafico-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+
+    <div class="col-md-6">
+      <div class="caixa">
+        <div class="titulo-caixa"><h5>Canais de Atendimento</h5></div>
+        <div id="totalRegistros" class="mb-2">&nbsp;</div>
+        <div class="border p-3">
+          <canvas id="painel2" class="grafico-canvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

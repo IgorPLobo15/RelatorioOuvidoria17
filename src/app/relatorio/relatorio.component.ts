@@ -1,4 +1,4 @@
-import { DataService } from './../services/data.service';
+import { DadosPainelItem, DataService } from './../services/data.service';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -22,9 +22,11 @@ export class RelatorioComponent implements OnInit {
   subassuntos: any[] = [];
   tramites: any[] = [];
   graficoPainel1: any;
-  totalRegistros: number = 0;
+  graficoPainel2: any;
+  graficoPainel3: any;
+  totalRegistros: string = '0';  // Propriedade para armazenar o total de registros formatado
 
-  constructor(private fb: FormBuilder, private dataService: DataService) {
+  constructor(private fb: FormBuilder, private dataService : DataService) {
     this.filtroForm = this.fb.group({
       data_inicial: [''],
       data_final: [''],
@@ -54,22 +56,37 @@ export class RelatorioComponent implements OnInit {
 
   onSubmit() {
     if (this.filtroForm.valid) {
-       console.log('Filtros:', this.filtroForm.value);
-      this.carregarGrafico1();
+      const filtros = this.filtroForm.value;
+      console.log('Filtros aplicados:', filtros);  // Verifique os filtros aplicados
+      this.carregarGraficos();
     }
   }
 
-  carregarGrafico1() {
+  carregarGraficos() {
     const filtros = this.filtroForm.value;
+
+    // Remova propriedades vazias dos filtros
+    const filtrosLimpos = Object.fromEntries(Object.entries(filtros).filter(([_, v]) => v != ''));
+    console.log('Filtros enviados para a API:', filtrosLimpos);  // Verifique os filtros enviados
+
+    this.carregaGraficoPainel1(filtrosLimpos);
+    this.carregaGraficoPainel2(filtrosLimpos);
+    this.carregaGraficoPainel3(filtrosLimpos);
+  }
+
+  carregaGraficoPainel1(filtros: any) {
+    const ctx = document.getElementById('painel1') as HTMLCanvasElement;
+    if (this.graficoPainel1) this.graficoPainel1.destroy();
+
     this.dataService.getDadosPainel1(1, filtros).subscribe(data => {
+      console.log('Dados da API para Painel 1:', data);  // Verifique os dados retornados pela API
+
       const tipos = data.map((item: any) => item.ds_manifestacao_tipo);
       const nums = data.map((item: any) => item.num);
 
+      // Calcule e formate o total de registros
       const totalRegistros = nums.reduce((a: number, b: number) => a + Number(b), 0);
       this.totalRegistros = totalRegistros.toLocaleString('pt-BR');
-
-      const ctx = document.getElementById('painel1') as HTMLCanvasElement;
-      if (this.graficoPainel1) this.graficoPainel1.destroy();
 
       this.graficoPainel1 = new Chart(ctx, {
         type: 'bar',
@@ -98,6 +115,166 @@ export class RelatorioComponent implements OnInit {
         }
       });
     });
+  }
+
+  carregaGraficoPainel2(filtros: any) {
+      const ctx = document.getElementById('painel2') as HTMLCanvasElement;
+      if (this.graficoPainel2) this.graficoPainel2.destroy();
+
+      this.dataService.getDadosPainel1(2, filtros).subscribe(data => {
+        console.log('Dados da API para Painel 2:', data);  // Verifique os dados retornados pela API
+
+        const meses = [...new Set(data.map((item: DadosPainelItem) => item.MES))]; // Extrai os meses únicos
+        const tipos = [...new Set(data.map((item: DadosPainelItem) => item.ds_manifestacao_tipo))]; // Extrai os tipos únicos
+
+        // Preparar os dados para o gráfico
+        let corAleatoria = this.gerarCorAleatoria();
+        const datasets = tipos.map(tipo => {
+          const dataPorTipo = data.filter((item: DadosPainelItem) => item.ds_manifestacao_tipo === tipo);
+          const dataPorMes = meses.map(mes => {
+            const registro = dataPorTipo.find((item: DadosPainelItem) => item.MES === mes);
+            return registro ? registro.num : 0;
+          });
+
+          if (corAleatoria.length === 0) {
+            console.log("Todas as cores foram usadas, considerar resetar a lista ou aumentar as opções.");
+            corAleatoria = this.gerarCorAleatoria();
+          }
+          const corFinal = corAleatoria.shift();
+
+          return {
+            label: tipo,
+            data: dataPorMes,
+            fill: false,
+            borderColor: corFinal,
+            backgroundColor: corFinal,
+            tension: 0.1
+          };
+        });
+
+        this.graficoPainel2 = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: meses,
+            datasets: datasets as any[] // Aqui, garantimos que o tipo esteja correto
+          },
+          options: {
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            },
+            plugins: {
+              legend: {
+                display: true,
+                position: 'bottom',
+                align: 'start' // Isto não irá alinhar a caixa de legenda à esquerda do canvas
+              }
+            }
+          }
+        });
+      });
+  }
+  carregaGraficoPainel3(filtros: any) {
+    const ctx = document.getElementById('painel3') as HTMLCanvasElement;
+  if (this.graficoPainel3) this.graficoPainel3.destroy();
+
+  this.dataService.getDadosPainel1(3, filtros).subscribe((data: DadosPainelItem[]) => {
+    console.log('Dados da API para Painel 3:', data);  // Verifique os dados retornados pela API
+
+    // Agrupa dados por órgão e soma as quantidades
+    let somaPorOrgao: { [key: string]: number } = {};
+    data.forEach((item: DadosPainelItem) => {
+      somaPorOrgao[item.ds_sigla] = (somaPorOrgao[item.ds_sigla] || 0) + parseInt(item.num, 10);
+    });
+
+    // Transforma o objeto em array e ordena por quantidade
+    let orgaosOrdenados = Object.keys(somaPorOrgao).map(key => ({
+      orgao: key,
+      total: somaPorOrgao[key]
+    })).sort((a, b) => b.total - a.total);
+
+    // Seleciona os top 10 órgãos e agrupa os demais em "Outros"
+    let topOrgaos = orgaosOrdenados.slice(0, 10);
+    let outrosTotal = orgaosOrdenados.slice(10).reduce((acc: number, curr: { orgao: string; total: number }) => acc + curr.total, 0);
+    if (outrosTotal > 0) {
+      topOrgaos.push({ orgao: 'Outros', total: outrosTotal });
+    }
+
+    // Prepara os dados para o gráfico
+    let corAleatoria = this.gerarCorAleatoria();
+    const meses = [...new Set(data.map(item => item.MES))];
+    const datasets = topOrgaos.map(orgao => {
+      const dadosOrgao: { [key: string]: number } = data.filter(item => item.ds_sigla === orgao.orgao || (orgao.orgao === 'Outros' && !topOrgaos.find(o => o.orgao === item.ds_sigla))).reduce((acc: { [key: string]: number }, curr: DadosPainelItem) => {
+        acc[curr.MES] = (acc[curr.MES] || 0) + parseInt(curr.num, 10);
+        return acc;
+      }, {});
+
+      if (corAleatoria.length === 0) {
+        console.log("Todas as cores foram usadas, considerar resetar a lista ou aumentar as opções.");
+        corAleatoria = this.gerarCorAleatoria();
+      }
+
+      return {
+        label: orgao.orgao,
+        data: meses.map(mes => dadosOrgao[mes as string] || 0),
+        backgroundColor: corAleatoria.shift(),
+      };
+    });
+
+    this.graficoPainel3 = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: meses,
+        datasets: datasets as any[]
+      },
+      options: {
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom',
+            align: 'start' // Isto não irá alinhar a caixa de legenda à esquerda do canvas
+          }
+        }
+      }
+    });
+  });
+  }
+
+
+  gerarCorAleatoria() {
+    const coresDisponiveis = [
+      'rgb(255, 99, 132)',
+      'rgb(54, 162, 235)',
+      'rgb(255, 206, 86)',
+      'rgb(75, 192, 192)',
+      'rgb(153, 102, 255)',
+      'rgb(255, 159, 64)',
+      'rgb(22, 160, 133)',
+      'rgb(231, 76, 60)',
+      'rgb(52, 73, 94)',
+      'rgb(46, 204, 113)',
+      'rgb(149, 165, 166)',
+      'rgb(243, 156, 18)',
+      'rgb(211, 84, 0)',
+      'rgb(192, 57, 43)',
+      'rgb(241, 196, 15)',
+      'rgb(155, 89, 182)',
+      'rgb(230, 126, 34)',
+      'rgb(52, 152, 219)'
+    ];
+
+    return coresDisponiveis;
   }
 }
 
