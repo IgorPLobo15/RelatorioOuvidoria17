@@ -1,10 +1,10 @@
 .caixa {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 0px;
-    margin-bottom: 0px;
-    background-color: #fff;
-  }
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 0px;
+  margin-bottom: 0px;
+  background-color: #fff;
+}
 
   .titulo-caixa {
     background-color: #f2f2f2;
@@ -26,6 +26,7 @@
   .btn-primary, .btn-secondary {
     margin-right: 5px;
   }
+
 
   .form-control {
     border-radius: 5px;

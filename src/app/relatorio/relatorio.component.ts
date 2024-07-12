@@ -4,6 +4,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 Chart.register(...registerables);
 
 
@@ -21,9 +22,12 @@ export class RelatorioComponent implements OnInit {
   assuntos: any[] = [];
   subassuntos: any[] = [];
   tramites: any[] = [];
+
   graficoPainel1: any;
   graficoPainel2: any;
   graficoPainel3: any;
+  graficoPainel4: any;
+
   totalRegistros: string = '0';  // Propriedade para armazenar o total de registros formatado
 
   constructor(private fb: FormBuilder, private dataService : DataService) {
@@ -72,6 +76,7 @@ export class RelatorioComponent implements OnInit {
     this.carregaGraficoPainel1(filtrosLimpos);
     this.carregaGraficoPainel2(filtrosLimpos);
     this.carregaGraficoPainel3(filtrosLimpos);
+    this.carregaGraficoPainel4(filtrosLimpos);
   }
 
   carregaGraficoPainel1(filtros: any) {
@@ -250,6 +255,60 @@ export class RelatorioComponent implements OnInit {
     });
   });
   }
+  carregaGraficoPainel4(filtros: any) {
+    const ctx = document.getElementById('painel4') as HTMLCanvasElement;
+    if (this.graficoPainel4) this.graficoPainel4.destroy();
+
+    this.dataService.getDadosPainel(7, filtros).subscribe((data: DadosPainelItem[]) => {
+      console.log('Dados da API para Painel 4:', data);
+
+      const labels = data.map(item => item.canal_atendimento);
+      const valores = data.map(item => parseInt(item.num, 10));
+      let corAleatoria = this.gerarCorAleatoria();
+
+      this.graficoPainel4 = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: valores,
+            backgroundColor: corAleatoria.slice(0, labels.length),
+            borderColor: 'rgba(255, 255, 255, 1)',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom',
+              align: 'start'
+            },
+            datalabels: {
+              color: '#fff',
+              anchor: 'end',
+              align: 'start',
+              offset: -1,
+              borderRadius: 4,
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              font: {
+                weight: 'bold'
+              },
+              formatter: (value: number, context: any) => {
+                const total = context.chart.data.datasets[0].data.reduce((acc: number, curr: number) => acc + curr, 0);
+                const percentage = (value / total * 100).toFixed(2); // Mantém duas casas decimais
+                return `${value.toLocaleString('pt-BR')} (${percentage}%)`; // Formatação para o padrão brasileiro com percentual
+              }
+            }
+          }
+        }
+      });
+    }, () => {
+      console.log("Erro ao carregar os dados para o Gráfico 4.");
+    });
+  }
+
 
 
   gerarCorAleatoria() {

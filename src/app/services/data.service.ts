@@ -7,6 +7,7 @@ export interface DadosPainelItem {
   num: string; // ou number, dependendo do tipo retornado pela API
   MES: string;
   ds_manifestacao_tipo: string;
+  canal_atendimento: string; // Adicione esta linha
 }
 @Injectable({
   providedIn: 'root'

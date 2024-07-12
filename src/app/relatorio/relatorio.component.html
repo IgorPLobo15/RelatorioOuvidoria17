@@ -1,64 +1,65 @@
 <div class="container mt-5 respiro-inferior">
   <form [formGroup]="filtroForm" (ngSubmit)="onSubmit()">
-    <div class="row g-3">
-      <div class="row mb-3">
-        <div class="col-md-12 d-flex align-items-center">
-            <img src="https://www.ouvidoriageral.go.gov.br/api/imagens/logo_ouvidoria.png" width="80">
-            <div class="ml-2">
-                <h3>Ouvidoria</h3>
-                <h6>Relatório de Gestão</h6>
-            </div>
-        </div>
-    </div>
-      <div class="col-md-4">
-        <label>Período:</label>
-        <div class="input-group">
-          <input type="date" formControlName="data_inicial" class="form-control">
-          <input type="date" formControlName="data_final" class="form-control">
-        </div>
+    <div class="caixa">
+      <div class="row g-3">
+        <div class="row mb-3">
+          <div class="col-md-12 d-flex align-items-center">
+              <img src="https://www.ouvidoriageral.go.gov.br/api/imagens/logo_ouvidoria.png" width="80">
+              <div class="ml-2">
+                  <h3>Ouvidoria</h3>
+                  <h6>Relatório de Gestão</h6>
+              </div>
+          </div>
       </div>
-      <div class="col-md-4">
-        <label for="orgaoSelect">Órgão:</label>
-        <select formControlName="orgao" class="form-control">
-          <option value="">Todos</option>
-          <option *ngFor="let orgao of orgaos" [value]="orgao.id_orgao">{{ orgao.ds_nome }}</option>
-        </select>
-      </div>
-      <div class="col-md-4">
-        <label for="tipoManifestacaoSelect">Tipo:</label>
-        <select formControlName="tipo" class="form-control">
-          <option value="">Todos</option>
-          <option *ngFor="let tipo of tipos" [value]="tipo.id_manifestacao_tipo">{{ tipo.ds_manifestacao_tipo }}</option>
-        </select>
-      </div>
-    </div>
 
-    <div class="row g-3 mt-2">
-      <div class="col-md-4">
-        <label for="assuntoSelect">Assunto:</label>
-        <select formControlName="assunto" class="form-control" (change)="onAssuntoChange()">
-          <option value="">Todos</option>
-          <option *ngFor="let assunto of assuntos" [value]="assunto.id_assunto">{{ assunto.ds_assunto }}</option>
-        </select>
+        <div class="col-md-4">
+          <label>Período:</label>
+          <div class="input-group">
+            <input type="date" formControlName="data_inicial" class="form-control">
+            <input type="date" formControlName="data_final" class="form-control">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <label for="orgaoSelect">Órgão:</label>
+          <select formControlName="orgao" class="form-control">
+            <option value="">Todos</option>
+            <option *ngFor="let orgao of orgaos" [value]="orgao.id_orgao">{{ orgao.ds_nome }}</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="tipoManifestacaoSelect">Tipo:</label>
+          <select formControlName="tipo" class="form-control">
+            <option value="">Todos</option>
+            <option *ngFor="let tipo of tipos" [value]="tipo.id_manifestacao_tipo">{{ tipo.ds_manifestacao_tipo }}</option>
+          </select>
+        </div>
       </div>
-      <div class="col-md-4">
-        <label for="subAssuntoSelect">Subassunto:</label>
-        <select formControlName="subassunto" class="form-control">
-          <option *ngFor="let subassunto of subassuntos" [value]="subassunto.id_subassunto">{{ subassunto.ds_subassunto }}</option>
-        </select>
+      <div class="row g-3 mt-2">
+        <div class="col-md-4">
+          <label for="assuntoSelect">Assunto:</label>
+          <select formControlName="assunto" class="form-control" (change)="onAssuntoChange()">
+            <option value="">Todos</option>
+            <option *ngFor="let assunto of assuntos" [value]="assunto.id_assunto">{{ assunto.ds_assunto }}</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="subAssuntoSelect">Subassunto:</label>
+          <select formControlName="subassunto" class="form-control">
+            <option *ngFor="let subassunto of subassuntos" [value]="subassunto.id_subassunto">{{ subassunto.ds_subassunto }}</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="tramiteSelect">Trâmite:</label>
+          <select formControlName="tramite" class="form-control">
+            <option *ngFor="let tramite of tramites" [value]="tramite.id_tipo_tramite">{{ tramite.ds_tipo_tramite }}</option>
+          </select>
+        </div>
       </div>
-      <div class="col-md-4">
-        <label for="tramiteSelect">Trâmite:</label>
-        <select formControlName="tramite" class="form-control">
-          <option *ngFor="let tramite of tramites" [value]="tramite.id_tipo_tramite">{{ tramite.ds_tipo_tramite }}</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row mt-3">
-      <div class="col-12 d-flex justify-content-end">
-        <button type="submit" class="btn btn-primary me-2">Filtrar</button>
-        <button type="reset" class="btn btn-warning me-2">Limpar</button>
+      <div class="row mt-3">
+        <div class="col-12 d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+          <button type="reset" class="btn btn-warning me-2">Limpar</button>
+        </div>
       </div>
     </div>
   </form>
@@ -86,25 +87,20 @@
   </div>
 
   <div class="row gx-4 mb-4">
-    <div class="row gx-4 mb-4">
-      <div class="col-md-6 grafico-respiro">
-        <div class="caixa">
-          <div class="titulo-caixa"><h5>Órgãos mais Demandados</h5></div>
-          <div class="border p-3">
-            <canvas id="painel3" class="grafico-canvas"></canvas>
-          </div>
+    <div class="col-md-6 grafico-respiro">
+      <div class="caixa">
+        <div class="titulo-caixa"><h5>Órgãos mais Demandados</h5></div>
+        <div class="border p-3">
+          <canvas id="painel3" class="grafico-canvas"></canvas>
         </div>
       </div>
-
-    <div class="col-md-6">
+    </div>
+    <div class="col-md-6 grafico-respiro">
       <div class="caixa">
         <div class="titulo-caixa"><h5>Canais de Atendimento</h5></div>
-        <div id="totalRegistros" class="mb-2">&nbsp;</div>
         <div class="border p-3">
-          <canvas id="painel2" class="grafico-canvas"></canvas>
+          <canvas id="painel4" class="grafico-canvas"></canvas>
         </div>
       </div>
     </div>
   </div>
-
-</div>
