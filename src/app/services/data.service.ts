@@ -8,6 +8,7 @@ export interface DadosPainelItem {
   MES: string;
   ds_manifestacao_tipo: string;
   canal_atendimento: string; // Adicione esta linha
+  ds_municipio: string;
 }
 @Injectable({
   providedIn: 'root'

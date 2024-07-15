@@ -26,7 +26,8 @@ export class RelatorioComponent implements OnInit {
   graficoPainel1: any;
   graficoPainel2: any;
   graficoPainel3: any;
-  graficoPainel4: any;
+  graficoPainel4: Chart | undefined;
+  graficoPainel5: Chart | undefined;
 
   totalRegistros: string = '0';  // Propriedade para armazenar o total de registros formatado
 
@@ -77,6 +78,7 @@ export class RelatorioComponent implements OnInit {
     this.carregaGraficoPainel2(filtrosLimpos);
     this.carregaGraficoPainel3(filtrosLimpos);
     this.carregaGraficoPainel4(filtrosLimpos);
+    this.carregaGraficoPainel5(filtrosLimpos);
   }
 
   carregaGraficoPainel1(filtros: any) {
@@ -255,11 +257,12 @@ export class RelatorioComponent implements OnInit {
     });
   });
   }
+
   carregaGraficoPainel4(filtros: any) {
     const ctx = document.getElementById('painel4') as HTMLCanvasElement;
     if (this.graficoPainel4) this.graficoPainel4.destroy();
 
-    this.dataService.getDadosPainel(7, filtros).subscribe((data: DadosPainelItem[]) => {
+    this.dataService.getDadosPainel1(7, filtros).subscribe((data: DadosPainelItem[]) => {
       console.log('Dados da API para Painel 4:', data);
 
       const labels = data.map(item => item.canal_atendimento);
@@ -272,7 +275,7 @@ export class RelatorioComponent implements OnInit {
           labels: labels,
           datasets: [{
             data: valores,
-            backgroundColor: corAleatoria.slice(0, labels.length),
+            backgroundColor: corAleatoria,
             borderColor: 'rgba(255, 255, 255, 1)',
             borderWidth: 2
           }]
@@ -302,10 +305,68 @@ export class RelatorioComponent implements OnInit {
               }
             }
           }
+        },
+        plugins: [ChartDataLabels]
+      });
+    }, (error) => {
+      console.error("Erro ao carregar os dados para o Gráfico 4:", error);
+    });
+  }
+
+  carregaGraficoPainel5(filtros: any) {
+    const ctx = document.getElementById('painel5') as HTMLCanvasElement;
+    if (this.graficoPainel5) this.graficoPainel5.destroy();
+
+    this.dataService.getDadosPainel1(5, filtros).subscribe((data: DadosPainelItem[]) => {
+      console.log('Dados da API para Painel 5:', data);
+
+      data.forEach(item => {
+        if (item.ds_municipio === null) {
+          item.ds_municipio = "Não informado";
         }
       });
-    }, () => {
-      console.log("Erro ao carregar os dados para o Gráfico 4.");
+
+      // Organizar os dados
+      data.sort((a, b) => parseInt(b.num, 10) - parseInt(a.num, 10)); // Ordena decrescentemente pela quantidade
+
+      const labels = data.slice(0, 10).map(item => item.ds_municipio); // Pega os 10 primeiros municípios
+      const quantidades = data.slice(0, 10).map(item => parseInt(item.num, 10)); // Pega as quantidades dos 10 primeiros
+
+      // Calcula o total de "Outros"
+      const outrosTotal = data.slice(10).reduce((sum, item) => sum + parseInt(item.num, 10), 0);
+      if (outrosTotal > 0) {
+        labels.push("Outros");
+        quantidades.push(outrosTotal);
+      }
+
+      let corAleatoria = this.gerarCorAleatoria();
+
+      this.graficoPainel5 = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Quantidade',
+            data: quantidades,
+            backgroundColor: corAleatoria
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }, (error) => {
+      console.error("Erro ao carregar os dados para o Gráfico 5:", error);
     });
   }
 
