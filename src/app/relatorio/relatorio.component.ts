@@ -32,6 +32,7 @@ export class RelatorioComponent implements OnInit {
   graficoPainel4: Chart | undefined;
   graficoPainel5: Chart | undefined;
   graficoPainel6: Chart | undefined;
+  graficoPainel7: Chart | undefined;
 
   totalRegistros: string = '0';  // Propriedade para armazenar o total de registros formatado
 
@@ -85,6 +86,7 @@ export class RelatorioComponent implements OnInit {
     this.carregaGraficoPainel4(filtrosLimpos);
     this.carregaGraficoPainel5(filtrosLimpos);
     this.carregaGraficoPainel6(filtrosLimpos);
+    this.carregaGraficoPainel7(filtrosLimpos);
   }
 
   carregaGraficoPainel1(filtros: any) {
@@ -377,7 +379,113 @@ export class RelatorioComponent implements OnInit {
   }
 
   carregaGraficoPainel6(filtros: any){
+    const ctx = document.getElementById('painel6') as HTMLCanvasElement;
+  if (this.graficoPainel6) this.graficoPainel6.destroy();
 
+  this.dataService.getDadosPainel1(6, filtros).subscribe((data: DadosPainelItem[]) => {
+    console.log('Dados da API para Painel 6:', data);
+
+    if (data && data.length > 0) {
+      const dataObj = data[0];
+      const totalRecebidas = parseInt(dataObj.lai_recebida, 10);
+      document.getElementById('totalRecebidas')!.innerHTML = `Total de LAI Recebidas: <strong>${totalRecebidas.toLocaleString('pt-BR')}</strong>`;
+
+      const labels = ['Atendidas', 'Indeferidas', 'Em Trâmite'];
+      const valores = [parseInt(dataObj.lai_atendida, 10), parseInt(dataObj.lai_indeferida, 10), parseInt(dataObj.lai_em_tramite, 10)];
+      const corAleatoria = this.gerarCorAleatoria();
+
+      this.graficoPainel6 = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: valores,
+            backgroundColor: corAleatoria,
+            borderColor: 'rgba(255, 255, 255, 1)',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true,
+              position: 'bottom'
+            },
+            tooltip: {
+              callbacks: {
+                label: (context: any) => {
+                  const total = context.dataset.data.reduce((acc: number, curr: number) => acc + curr, 0);
+                  const percentage = (context.raw / total * 100).toFixed(2);
+                  return `${context.label}: ${context.raw.toLocaleString('pt-BR')} (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      } as any);
+    } else {
+      console.log("Dados inválidos ou incompletos recebidos para o gráfico de pizza.");
+    }
+  }, (error) => {
+    console.error("Erro ao carregar os dados para o Gráfico 6:", error);
+  });
+  }
+  carregaGraficoPainel7(filtros: any){
+    const ctx = document.getElementById('painel7') as HTMLCanvasElement;
+  if (this.graficoPainel7) this.graficoPainel7.destroy();
+
+  this.dataService.getDadosPainel1(4, filtros).subscribe((data: DadosPainelItem[]) => {
+    console.log('Dados da API para Painel 7:', data);
+
+    data.sort((a, b) => parseInt(b.num, 10) - parseInt(a.num, 10)); // Ordena decrescentemente pela quantidade
+
+    const corAleatoria = this.gerarCorAleatoria();
+    const fullLabels = data.slice(0, 10).map(item => item.ds_negativa || "Outros"); // Mantém os rótulos completos aqui
+    const labels = fullLabels.map(label => label.length > 15 ? label.slice(0, 15) + '...' : label); // Versão encurtada dos rótulos
+    const quantidades = data.slice(0, 10).map(item => parseInt(item.num, 10));
+
+    const outrosTotal = data.slice(10).reduce((sum, item) => sum + parseInt(item.num, 10), 0);
+    if (outrosTotal > 0) {
+      fullLabels.push("Outros");
+      labels.push("Outros");
+      quantidades.push(outrosTotal);
+    }
+
+    this.graficoPainel7 = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Quantidade',
+          data: quantidades,
+          backgroundColor: quantidades.map((_, index) => corAleatoria[index % corAleatoria.length]),
+        }]
+      },
+      options: {
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              title: (tooltipItems: any) => {
+                return fullLabels[tooltipItems[0].dataIndex];
+              }
+            }
+          }
+        }
+      }
+    } as any);
+  }, (error) => {
+    console.error("Erro ao carregar os dados para o Gráfico 7:", error);
+  });
   }
 
 

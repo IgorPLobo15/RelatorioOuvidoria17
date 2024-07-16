@@ -4,15 +4,16 @@ import { Observable } from 'rxjs';
 
 export interface DadosPainelItem {
   ds_sigla: string;
-  num: string; // ou number, dependendo do tipo retornado pela API
+  num: string;
   MES: string;
   ds_manifestacao_tipo: string;
-  canal_atendimento: string; // Adicione esta linha
+  canal_atendimento: string;
   ds_municipio: string;
-  lai_recebida: string; // Adicione esta linha
-  lai_atendida: string; // Adicione esta linha
-  lai_indeferida: string; // Adicione esta linha
-  lai_em_tramite: string; // Adicione esta linha
+  lai_recebida: string;
+  lai_atendida: string;
+  lai_indeferida: string;
+  lai_em_tramite: string;
+  ds_negativa:string;
 }
 @Injectable({
   providedIn: 'root'
