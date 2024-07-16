@@ -2,7 +2,7 @@ import { DadosPainelItem, DataService } from './../services/data.service';
 import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 Chart.register(...registerables);
@@ -11,7 +11,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-relatorio',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule,ReactiveFormsModule,FormsModule],
   templateUrl: './relatorio.component.html',
   styleUrl: './relatorio.component.css'
 })
@@ -23,6 +23,10 @@ export class RelatorioComponent implements OnInit {
   subassuntos: any[] = [];
   tramites: any[] = [];
 
+  minDate: string = '';
+  currentDate: string = '';
+  startDate: string = '';
+  endDate: string = '';
 
 
 
@@ -51,7 +55,23 @@ export class RelatorioComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregarCombosIniciais();
+
+    const today = new Date();
+    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+    const minDate = new Date('2023-06-22');
+
+    this.minDate = this.formatDate(minDate);
+    this.currentDate = this.formatDate(today);
+    this.startDate = this.formatDate(firstDayOfYear);
+    this.endDate = this.currentDate;
   }
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
+
 
   carregarCombosIniciais() {
     this.dataService.getOrgaos().subscribe(data => this.orgaos = data);
@@ -63,6 +83,53 @@ export class RelatorioComponent implements OnInit {
   onAssuntoChange() {
     const idAssunto = this.filtroForm.get('assunto')?.value;
     this.dataService.getSubassuntos(idAssunto).subscribe(data => this.subassuntos = data);
+  }
+  exportarDados() {
+    const filtros = this.filtroForm.value;
+    const filtrosLimpos = Object.fromEntries(Object.entries(filtros).filter(([_, v]) => v != ''));
+
+    let queryString = new URLSearchParams(filtrosLimpos as Record<string, string>).toString();
+    queryString += "&excel=true";
+
+    const url = `https://www.ouvidoriageral.go.gov.br/api/api/relatorios/dados-painel?${queryString}`;
+
+    fetch(url)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro ao buscar os dados');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Inclui o BOM UTF-8
+        let csvContent = "\uFEFF";
+        csvContent += "Data Manifestação,Órgão,Tipo Manifestação,Tema,Assunto Motivo,Situação,Canal Atendimento\n"; // Cabeçalho do CSV
+
+        data.forEach((row: any) => {
+          const rowArray = [
+            row.data_manifestacao,
+            row.orgao,
+            row.tipo_manifestacao,
+            row.tema,
+            row.assunto_motivo,
+            row.situacao,
+            row.canal_atendimento
+          ];
+          const rowString = rowArray.map(item => `"${item}"`).join(',');
+          csvContent += rowString + "\r\n";
+        });
+
+        // Converte o conteúdo para Blob e define o tipo como texto/csv charset=utf-8
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const csvUrl = URL.createObjectURL(blob);
+        link.setAttribute("href", csvUrl);
+        link.setAttribute("download", "relatorio.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link); // Limpa o link após o download
+      })
+      .catch(error => console.error("Erro ao exportar:", error));
   }
 
   onSubmit() {

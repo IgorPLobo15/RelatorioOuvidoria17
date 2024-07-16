@@ -21,9 +21,30 @@
           <div class="col-md-4">
             <label>Período:</label>
             <div class="input-group">
-              <input type="date" formControlName="data_inicial" class="form-control">
-              <input type="date" formControlName="data_final" class="form-control">
+              <input
+                type="date"
+                [min]="minDate"
+                [max]="currentDate"
+                [value]="startDate"
+                id="dataInicial"
+                class="form-control"
+                placeholder="Data Inicial"
+                aria-label="Data Inicial"
+                (ngModel)="startDate"
+              >
+              <input
+                type="date"
+                [min]="minDate"
+                [max]="currentDate"
+                [value]="endDate"
+                id="dataFinal"
+                class="form-control"
+                placeholder="Data Final"
+                aria-label="Data Final"
+                (ngModel)="endDate"
+              >
             </div>
+
           </div>
           <div class="col-md-4">
             <label for="orgaoSelect">Órgão:</label>
@@ -66,7 +87,7 @@
           <div class="col-12 d-flex justify-content-end">
             <button type="submit" class="btn btn-primary me-2">Filtrar</button>
             <button type="reset" class="btn btn-warning me-2">Limpar</button>
-            <button type="button" class="btn btn-success" id="btnExportar">Exportar</button>
+            <button type="button" class="btn btn-success" id="btnExportar" (click)="exportarDados()">Exportar</button>
           </div>
           <div id="linkDadosAnteriores" class="nota-rodape" style="text-align:right;">
             <br>Para acessar dados anteriores a 22/06/2023 <a href="http://www.cge.go.gov.br/ouvidoria/relatorioGeral.php" target="_blank" id="linkAntigo">clique aqui</a>.
