@@ -72,13 +72,13 @@
           <div class="col-md-4">
             <label for="subAssuntoSelect">Subassunto:</label>
             <select formControlName="subassunto" class="form-control">
-              <option *ngFor="let subassunto of subassuntos" [value]="subassunto.id_subassunto">{{ subassunto.ds_subassunto }}</option>
+              <!-- <option *ngFor="let subassunto of subassuntos" [value]="subassunto.id_subassunto">{{ subassunto.ds_subassunto }}</option> -->
             </select>
           </div>
           <div class="col-md-4">
             <label for="tramiteSelect">Trâmite:</label>
             <select formControlName="tramite" class="form-control">
-
+              <option value="">Todos</option>
               <option *ngFor="let tramite of tramites" [value]="tramite.id_tipo_tramite">{{ tramite.ds_tipo_tramite }}</option>
             </select>
           </div>
