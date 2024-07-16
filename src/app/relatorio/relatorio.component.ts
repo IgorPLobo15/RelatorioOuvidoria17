@@ -23,11 +23,15 @@ export class RelatorioComponent implements OnInit {
   subassuntos: any[] = [];
   tramites: any[] = [];
 
+
+
+
   graficoPainel1: any;
   graficoPainel2: any;
   graficoPainel3: any;
   graficoPainel4: Chart | undefined;
   graficoPainel5: Chart | undefined;
+  graficoPainel6: Chart | undefined;
 
   totalRegistros: string = '0';  // Propriedade para armazenar o total de registros formatado
 
@@ -39,8 +43,9 @@ export class RelatorioComponent implements OnInit {
       tipo: [''],
       assunto: [''],
       subassunto: [''],
-      tramite: ['']
+      tramite: [''],
     });
+
   }
 
   ngOnInit(): void {
@@ -79,6 +84,7 @@ export class RelatorioComponent implements OnInit {
     this.carregaGraficoPainel3(filtrosLimpos);
     this.carregaGraficoPainel4(filtrosLimpos);
     this.carregaGraficoPainel5(filtrosLimpos);
+    this.carregaGraficoPainel6(filtrosLimpos);
   }
 
   carregaGraficoPainel1(filtros: any) {
@@ -368,6 +374,10 @@ export class RelatorioComponent implements OnInit {
     }, (error) => {
       console.error("Erro ao carregar os dados para o Gráfico 5:", error);
     });
+  }
+
+  carregaGraficoPainel6(filtros: any){
+
   }
 
 

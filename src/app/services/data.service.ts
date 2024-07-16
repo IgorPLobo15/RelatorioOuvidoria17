@@ -9,6 +9,10 @@ export interface DadosPainelItem {
   ds_manifestacao_tipo: string;
   canal_atendimento: string; // Adicione esta linha
   ds_municipio: string;
+  lai_recebida: string; // Adicione esta linha
+  lai_atendida: string; // Adicione esta linha
+  lai_indeferida: string; // Adicione esta linha
+  lai_em_tramite: string; // Adicione esta linha
 }
 @Injectable({
   providedIn: 'root'
