@@ -1,6 +1,5 @@
 import { DadosPainelItem, DataService } from './../services/data.service';
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
@@ -23,13 +22,14 @@ export class RelatorioComponent implements OnInit {
   subassuntos: any[] = [];
   tramites: any[] = [];
 
+  //Formatação e limitação de datas
   minDate: string = '';
   currentDate: string = '';
   startDate: string = '';
   endDate: string = '';
 
 
-
+  //Graficos
   graficoPainel1: any;
   graficoPainel2: any;
   graficoPainel3: any;
@@ -38,7 +38,8 @@ export class RelatorioComponent implements OnInit {
   graficoPainel6: Chart | undefined;
   graficoPainel7: Chart | undefined;
 
-  totalRegistros: string = '0';  // Propriedade para armazenar o total de registros formatado
+  //Conta Registros
+  totalRegistros: string = '0';
 
   constructor(private fb: FormBuilder, private dataService : DataService) {
     this.filtroForm = this.fb.group({
@@ -72,7 +73,7 @@ export class RelatorioComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-
+  //Carrega os combos nos select
   carregarCombosIniciais() {
     this.dataService.getOrgaos().subscribe(data => this.orgaos = data);
     this.dataService.getManifestacaoTipos().subscribe(data => this.tipos = data);
@@ -140,6 +141,7 @@ export class RelatorioComponent implements OnInit {
     }
   }
 
+  //Carrega os graficos no site
   carregarGraficos() {
     const filtros = this.filtroForm.value;
 
@@ -238,7 +240,7 @@ export class RelatorioComponent implements OnInit {
           type: 'line',
           data: {
             labels: meses,
-            datasets: datasets as any[] // Aqui, garantimos que o tipo esteja correto
+            datasets: datasets as any[]
           },
           options: {
             maintainAspectRatio: false,
@@ -251,7 +253,7 @@ export class RelatorioComponent implements OnInit {
               legend: {
                 display: true,
                 position: 'bottom',
-                align: 'start' // Isto não irá alinhar a caixa de legenda à esquerda do canvas
+                align: 'start'
               }
             }
           }
@@ -325,7 +327,7 @@ export class RelatorioComponent implements OnInit {
           legend: {
             display: true,
             position: 'bottom',
-            align: 'start' // Isto não irá alinhar a caixa de legenda à esquerda do canvas
+            align: 'start'
           }
         }
       }
@@ -556,7 +558,7 @@ export class RelatorioComponent implements OnInit {
   }
 
 
-
+  //Geração de cores aleatorias para Entendimento do Usuario
   gerarCorAleatoria() {
     const coresDisponiveis = [
       'rgb(255, 99, 132)',
