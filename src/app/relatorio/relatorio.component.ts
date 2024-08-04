@@ -58,6 +58,13 @@ export class RelatorioComponent implements OnInit {
 
   ngOnInit(): void {
     // Carregar dados iniciais dos combos
+    const today = new Date();
+    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+    const minDate = new Date('2023-06-22');
+    this.minDate = this.formatDate(minDate);
+    this.currentDate = this.formatDate(today);
+    this.startDate = this.formatDate(firstDayOfYear);
+    this.endDate = this.currentDate;
     this.carregarCombosIniciais().then(() => {
       // Capturar parâmetros da URL
       this.route.queryParams.subscribe(params => {
@@ -71,6 +78,7 @@ export class RelatorioComponent implements OnInit {
         if (tipoParam) {
           this.filtroForm.patchValue({ tipo: tipoParam });
         }
+        
 
         // Carregar gráficos com os filtros aplicados
         this.carregarGraficos();
@@ -79,14 +87,14 @@ export class RelatorioComponent implements OnInit {
   }
 
   private getInitialStartDate(): string {
-    const firstDayOfYear = new Date(new Date().getFullYear(), 0, 1);
-    return this.formatDate(firstDayOfYear);
+    const yearStartDate = new Date(new Date().getFullYear(), 0, 1); // 01 de janeiro do ano atual
+    return this.formatDate(yearStartDate);
   }
-
+  
   private getInitialEndDate(): string {
-    return this.formatDate(new Date());
+    return this.formatDate(new Date()); // Data de hoje
   }
-
+  
   private formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = ('0' + (date.getMonth() + 1)).slice(-2);
