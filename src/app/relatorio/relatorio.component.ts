@@ -2,8 +2,10 @@ import { DadosPainelItem, DataService } from './../services/data.service';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+
 Chart.register(...registerables);
 
 
@@ -41,7 +43,7 @@ export class RelatorioComponent implements OnInit {
   //Conta Registros
   totalRegistros: string = '0';
 
-  constructor(private fb: FormBuilder, private dataService : DataService) {
+  constructor(private fb: FormBuilder, private dataService : DataService, private route: ActivatedRoute) {
     this.filtroForm = this.fb.group({
       data_inicial: [''],
       data_final: [''],
@@ -55,17 +57,36 @@ export class RelatorioComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.carregarCombosIniciais();
+    // Carregar dados iniciais dos combos
+    this.carregarCombosIniciais().then(() => {
+      // Capturar parâmetros da URL
+      this.route.queryParams.subscribe(params => {
+        const orgaoParam = params['orgao'];
+        const tipoParam = params['tipo'];
 
-    const today = new Date();
-    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
-    const minDate = new Date('2023-06-22');
+        // Atualizar o formulário com os parâmetros capturados
+        if (orgaoParam) {
+          this.filtroForm.patchValue({ orgao: orgaoParam });
+        }
+        if (tipoParam) {
+          this.filtroForm.patchValue({ tipo: tipoParam });
+        }
 
-    this.minDate = this.formatDate(minDate);
-    this.currentDate = this.formatDate(today);
-    this.startDate = this.formatDate(firstDayOfYear);
-    this.endDate = this.currentDate;
+        // Carregar gráficos com os filtros aplicados
+        this.carregarGraficos();
+      });
+    });
   }
+
+  private getInitialStartDate(): string {
+    const firstDayOfYear = new Date(new Date().getFullYear(), 0, 1);
+    return this.formatDate(firstDayOfYear);
+  }
+
+  private getInitialEndDate(): string {
+    return this.formatDate(new Date());
+  }
+
   private formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = ('0' + (date.getMonth() + 1)).slice(-2);
@@ -73,12 +94,13 @@ export class RelatorioComponent implements OnInit {
     return `${year}-${month}-${day}`;
   }
 
-  //Carrega os combos nos select
-  carregarCombosIniciais() {
-    this.dataService.getOrgaos().subscribe(data => this.orgaos = data);
-    this.dataService.getManifestacaoTipos().subscribe(data => this.tipos = data);
-    this.dataService.getAssuntos().subscribe(data => this.assuntos = data);
-    this.dataService.getTramites().subscribe(data => this.tramites = data);
+  carregarCombosIniciais(): Promise<void> {
+    return Promise.all([
+      this.dataService.getOrgaos().toPromise().then(data => this.orgaos = data),
+      this.dataService.getManifestacaoTipos().toPromise().then(data => this.tipos = data),
+      this.dataService.getAssuntos().toPromise().then(data => this.assuntos = data),
+      this.dataService.getTramites().toPromise().then(data => this.tramites = data)
+    ]).then(() => console.log('Combos carregados'));
   }
 
   onAssuntoChange() {
