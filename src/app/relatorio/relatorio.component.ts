@@ -78,7 +78,7 @@ export class RelatorioComponent implements OnInit {
         if (tipoParam) {
           this.filtroForm.patchValue({ tipo: tipoParam });
         }
-        
+
 
         // Carregar gráficos com os filtros aplicados
         this.carregarGraficos();
@@ -90,11 +90,11 @@ export class RelatorioComponent implements OnInit {
     const yearStartDate = new Date(new Date().getFullYear(), 0, 1); // 01 de janeiro do ano atual
     return this.formatDate(yearStartDate);
   }
-  
+
   private getInitialEndDate(): string {
     return this.formatDate(new Date()); // Data de hoje
   }
-  
+
   private formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = ('0' + (date.getMonth() + 1)).slice(-2);
@@ -134,7 +134,7 @@ export class RelatorioComponent implements OnInit {
       .then(data => {
         // Inclui o BOM UTF-8
         let csvContent = "\uFEFF";
-        csvContent += "Data Manifestação,Órgão,Tipo Manifestação,Tema,Assunto Motivo,Situação,Canal Atendimento\n"; // Cabeçalho do CSV
+        csvContent += "Data Manifestação,Órgão,Tipo Manifestação,Tema,Assunto Motivo,Situação,Canal Atendimento\n";
 
         data.forEach((row: any) => {
           const rowArray = [
@@ -158,7 +158,7 @@ export class RelatorioComponent implements OnInit {
         link.setAttribute("download", "relatorio.csv");
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link); // Limpa o link após o download
+        document.body.removeChild(link);
       })
       .catch(error => console.error("Erro ao exportar:", error));
   }
@@ -166,7 +166,7 @@ export class RelatorioComponent implements OnInit {
   onSubmit() {
     if (this.filtroForm.valid) {
       const filtros = this.filtroForm.value;
-      console.log('Filtros aplicados:', filtros);  // Verifique os filtros aplicados
+      console.log('Filtros aplicados:', filtros);
       this.carregarGraficos();
     }
   }
@@ -177,7 +177,7 @@ export class RelatorioComponent implements OnInit {
 
     // Remova propriedades vazias dos filtros
     const filtrosLimpos = Object.fromEntries(Object.entries(filtros).filter(([_, v]) => v != ''));
-    console.log('Filtros enviados para a API:', filtrosLimpos);  // Verifique os filtros enviados
+    console.log('Filtros enviados para a API:', filtrosLimpos);
 
     this.carregaGraficoPainel1(filtrosLimpos);
     this.carregaGraficoPainel2(filtrosLimpos);
@@ -193,7 +193,7 @@ export class RelatorioComponent implements OnInit {
     if (this.graficoPainel1) this.graficoPainel1.destroy();
 
     this.dataService.getDadosPainel1(1, filtros).subscribe(data => {
-      console.log('Dados da API para Painel 1:', data);  // Verifique os dados retornados pela API
+      console.log('Dados da API para Painel 1:', data);
 
       const tipos = data.map((item: any) => item.ds_manifestacao_tipo);
       const nums = data.map((item: any) => item.num);
@@ -236,10 +236,10 @@ export class RelatorioComponent implements OnInit {
       if (this.graficoPainel2) this.graficoPainel2.destroy();
 
       this.dataService.getDadosPainel1(2, filtros).subscribe(data => {
-        console.log('Dados da API para Painel 2:', data);  // Verifique os dados retornados pela API
+        console.log('Dados da API para Painel 2:', data);
 
-        const meses = [...new Set(data.map((item: DadosPainelItem) => item.MES))]; // Extrai os meses únicos
-        const tipos = [...new Set(data.map((item: DadosPainelItem) => item.ds_manifestacao_tipo))]; // Extrai os tipos únicos
+        const meses = [...new Set(data.map((item: DadosPainelItem) => item.MES))];
+        const tipos = [...new Set(data.map((item: DadosPainelItem) => item.ds_manifestacao_tipo))];
 
         // Preparar os dados para o gráfico
         let corAleatoria = this.gerarCorAleatoria();
@@ -295,7 +295,7 @@ export class RelatorioComponent implements OnInit {
   if (this.graficoPainel3) this.graficoPainel3.destroy();
 
   this.dataService.getDadosPainel1(3, filtros).subscribe((data: DadosPainelItem[]) => {
-    console.log('Dados da API para Painel 3:', data);  // Verifique os dados retornados pela API
+    console.log('Dados da API para Painel 3:', data);
 
     // Agrupa dados por órgão e soma as quantidades
     let somaPorOrgao: { [key: string]: number } = {};
@@ -407,8 +407,8 @@ export class RelatorioComponent implements OnInit {
               },
               formatter: (value: number, context: any) => {
                 const total = context.chart.data.datasets[0].data.reduce((acc: number, curr: number) => acc + curr, 0);
-                const percentage = (value / total * 100).toFixed(2); // Mantém duas casas decimais
-                return `${value.toLocaleString('pt-BR')} (${percentage}%)`; // Formatação para o padrão brasileiro com percentual
+                const percentage = (value / total * 100).toFixed(2);
+                return `${value.toLocaleString('pt-BR')} (${percentage}%)`;
               }
             }
           }
@@ -434,10 +434,10 @@ export class RelatorioComponent implements OnInit {
       });
 
       // Organizar os dados
-      data.sort((a, b) => parseInt(b.num, 10) - parseInt(a.num, 10)); // Ordena decrescentemente pela quantidade
+      data.sort((a, b) => parseInt(b.num, 10) - parseInt(a.num, 10));
 
-      const labels = data.slice(0, 10).map(item => item.ds_municipio); // Pega os 10 primeiros municípios
-      const quantidades = data.slice(0, 10).map(item => parseInt(item.num, 10)); // Pega as quantidades dos 10 primeiros
+      const labels = data.slice(0, 10).map(item => item.ds_municipio);
+      const quantidades = data.slice(0, 10).map(item => parseInt(item.num, 10));
 
       // Calcula o total de "Outros"
       const outrosTotal = data.slice(10).reduce((sum, item) => sum + parseInt(item.num, 10), 0);
@@ -477,59 +477,69 @@ export class RelatorioComponent implements OnInit {
     });
   }
 
-  carregaGraficoPainel6(filtros: any){
+  carregaGraficoPainel6(filtros: any) {
     const ctx = document.getElementById('painel6') as HTMLCanvasElement;
-  if (this.graficoPainel6) this.graficoPainel6.destroy();
+    if (this.graficoPainel6) this.graficoPainel6.destroy();
 
-  this.dataService.getDadosPainel1(6, filtros).subscribe((data: DadosPainelItem[]) => {
-    console.log('Dados da API para Painel 6:', data);
+    this.dataService.getDadosPainel1(6, filtros).subscribe((data: DadosPainelItem[]) => {
+      console.log('Dados da API para Painel 6:', data);
 
-    if (data && data.length > 0) {
-      const dataObj = data[0];
-      const totalRecebidas = parseInt(dataObj.lai_recebida, 10);
-      document.getElementById('totalRecebidas')!.innerHTML = `Total de LAI Recebidas: <strong>${totalRecebidas.toLocaleString('pt-BR')}</strong>`;
+      if (data && data.length > 0) {
+        const dataObj = data[0];
+        const totalRecebidas = parseInt(dataObj.lai_recebida, 10);
+        document.getElementById('totalRecebidas')!.innerHTML = `Total de LAI Recebidas: <strong>${totalRecebidas.toLocaleString('pt-BR')}</strong>`;
 
-      const labels = ['Atendidas', 'Indeferidas', 'Em Trâmite'];
-      const valores = [parseInt(dataObj.lai_atendida, 10), parseInt(dataObj.lai_indeferida, 10), parseInt(dataObj.lai_em_tramite, 10)];
-      const corAleatoria = this.gerarCorAleatoria();
+        const labels = ['Atendidas', 'Indeferidas', 'Em Trâmite'];
+        const valores = [parseInt(dataObj.lai_atendida, 10), parseInt(dataObj.lai_indeferida, 10), parseInt(dataObj.lai_em_tramite, 10)];
+        const corAleatoria = this.gerarCorAleatoria();
 
-      this.graficoPainel6 = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: labels,
-          datasets: [{
-            data: valores,
-            backgroundColor: corAleatoria,
-            borderColor: 'rgba(255, 255, 255, 1)',
-            borderWidth: 2
-          }]
-        },
-        options: {
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: true,
-              position: 'bottom'
-            },
-            tooltip: {
-              callbacks: {
-                label: (context: any) => {
-                  const total = context.dataset.data.reduce((acc: number, curr: number) => acc + curr, 0);
-                  const percentage = (context.raw / total * 100).toFixed(2);
-                  return `${context.label}: ${context.raw.toLocaleString('pt-BR')} (${percentage}%)`;
+        this.graficoPainel6 = new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: valores,
+              backgroundColor: corAleatoria,
+              borderColor: 'rgba(255, 255, 255, 1)',
+              borderWidth: 2
+            }]
+          },
+          options: {
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'bottom',
+                align: 'start'
+              },
+              datalabels: {
+                color: '#fff',
+                anchor: 'end',
+                align: 'start',
+                offset: -1,
+                borderRadius: 4,
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                font: {
+                  weight: 'bold'
+                },
+                formatter: (value: number, context: any) => {
+                  const total = context.chart.data.datasets[0].data.reduce((acc: number, curr: number) => acc + curr, 0);
+                  const percentage = (value / total * 100).toFixed(2);
+                  return `${value.toLocaleString('pt-BR')} (${percentage}%)`;
                 }
               }
             }
-          }
-        }
-      } as any);
-    } else {
-      console.log("Dados inválidos ou incompletos recebidos para o gráfico de pizza.");
-    }
-  }, (error) => {
-    console.error("Erro ao carregar os dados para o Gráfico 6:", error);
-  });
+          },
+          plugins: [ChartDataLabels]
+        } as any);
+      } else {
+        console.log("Dados inválidos ou incompletos recebidos para o gráfico de pizza.");
+      }
+    }, (error) => {
+      console.error("Erro ao carregar os dados para o Gráfico 6:", error);
+    });
   }
+
   carregaGraficoPainel7(filtros: any){
     const ctx = document.getElementById('painel7') as HTMLCanvasElement;
   if (this.graficoPainel7) this.graficoPainel7.destroy();
@@ -537,11 +547,11 @@ export class RelatorioComponent implements OnInit {
   this.dataService.getDadosPainel1(4, filtros).subscribe((data: DadosPainelItem[]) => {
     console.log('Dados da API para Painel 7:', data);
 
-    data.sort((a, b) => parseInt(b.num, 10) - parseInt(a.num, 10)); // Ordena decrescentemente pela quantidade
+    data.sort((a, b) => parseInt(b.num, 10) - parseInt(a.num, 10));
 
     const corAleatoria = this.gerarCorAleatoria();
-    const fullLabels = data.slice(0, 10).map(item => item.ds_negativa || "Outros"); // Mantém os rótulos completos aqui
-    const labels = fullLabels.map(label => label.length > 15 ? label.slice(0, 15) + '...' : label); // Versão encurtada dos rótulos
+    const fullLabels = data.slice(0, 10).map(item => item.ds_negativa || "Outros");
+    const labels = fullLabels.map(label => label.length > 15 ? label.slice(0, 15) + '...' : label);
     const quantidades = data.slice(0, 10).map(item => parseInt(item.num, 10));
 
     const outrosTotal = data.slice(10).reduce((sum, item) => sum + parseInt(item.num, 10), 0);
